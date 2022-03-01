@@ -1,29 +1,69 @@
-import React, { createContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import api from '../services/api';
+
+interface UseData {
+  name: string;
+  username: string;
+  email: string;
+}
 
 interface AuthContextData {
   signed: boolean;
+  user: UseData | null;
   Login(): Promise<void>;
+  Logout(): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-import api from '../services/api';
-
 export const AuthProvider: React.FC = ({ children }) => {
+  const [user, setUser] = useState<UseData | null>(null);
+
+  useEffect(() => {
+    const storagedUser = localStorage.getItem('@App:user');
+    const storagedToken = localStorage.getItem('@App:token');
+
+    if (storagedUser && storagedToken) {
+      setUser(JSON.parse(storagedUser));
+    }
+  }, []);
+
+  function Logout() {
+    setUser(null);
+
+    localStorage.removeItem('@App:user');
+    localStorage.removeItem('@App:token');
+  }
+
   async function Login() {
     const response = await api.post('session', {
       email: 'eegames7@gmail.com',
       password: 'qwe123',
     });
 
-    console.log(response);
+    const userLoged: UseData = {
+      name: response.data.name,
+      username: response.data.username,
+      email: response.data.email,
+    };
+
+    setUser(userLoged);
+
+    localStorage.setItem('@App:user', JSON.stringify(userLoged));
+    localStorage.setItem('@App:token', response.data.token);
   }
 
   return (
-    <AuthContext.Provider value={{ signed: true, Login }}>
+    <AuthContext.Provider
+      value={{ signed: Boolean(user), user, Login, Logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthContext;
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  return context;
+}

@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import AuthContext from '../../contexts/auth';
+import { useAuth } from '../../contexts/auth';
 
 const Login: React.FC = () => {
-  const context = useContext(AuthContext);
+  const context = useAuth();
 
   function handleLogin() {
     context.Login();
@@ -10,6 +10,7 @@ const Login: React.FC = () => {
 
   return (
     <div>
+      <h1>Login</h1>
       <button onClick={handleLogin}>Login</button>
     </div>
   );
