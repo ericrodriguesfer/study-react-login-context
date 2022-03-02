@@ -1,15 +1,13 @@
-import { ChakraProvider } from '@chakra-ui/react';
-
 import { AuthProvider } from './contexts/auth';
 import Routes from './routes';
+import GlobalStyle from './styles/global';
 
 function App() {
   return (
-    // <ChakraProvider>
     <AuthProvider>
+      <GlobalStyle />
       <Routes />
     </AuthProvider>
-    // </ChakraProvider>
   );
 }
 
