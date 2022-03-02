@@ -26,7 +26,7 @@ class UpdateUserService {
       throw new Error('This user does not exists in our database');
     }
 
-    if (username) {
+    if (username && username !== user.username) {
       const userExistsByUserName: User | null =
         await prismaClient.user.findFirst({
           where: { username },
@@ -40,7 +40,7 @@ class UpdateUserService {
       }
     }
 
-    if (email) {
+    if (email && email !== user.email) {
       const userExistsByEmail: User | null = await prismaClient.user.findFirst({
         where: { email },
       });
